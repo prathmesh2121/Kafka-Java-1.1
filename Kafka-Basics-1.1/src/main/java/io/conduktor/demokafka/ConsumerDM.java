@@ -1,21 +1,24 @@
 package io.conduktor.demokafka;
 
+import org.apache.kafka.clients.consumer.ConsumerRebalanceListener;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
 import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.ProducerRecord;
+import org.apache.kafka.common.TopicPartition;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.time.Duration;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Properties;
 
 public class ConsumerDM
 {
     private static Logger logger = LoggerFactory.getLogger(ConsumerDM.class.getSimpleName());
-    private static String groupId = "G1";
+    private static String groupId = "G6";
     private static String topic = "Salary";
 
 
@@ -37,7 +40,20 @@ public class ConsumerDM
         KafkaConsumer<String, String> consumer = new KafkaConsumer<>(properties);
 
         // subscribe to topic
-        consumer.subscribe(Arrays.asList(topic));
+        consumer.subscribe(
+                Arrays.asList(topic),
+                new ConsumerRebalanceListener() {
+
+                @Override
+                public void onPartitionsRevoked(Collection<TopicPartition> partitions) {
+                    logger.info("Revoked: {}", partitions);
+                }
+
+                @Override
+                public void onPartitionsAssigned(Collection<TopicPartition> partitions) {
+                    logger.info("Assigned: {}", partitions);
+                }
+        });
 
         // poll for new data
         while(true) {

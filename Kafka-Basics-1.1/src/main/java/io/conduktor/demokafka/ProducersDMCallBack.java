@@ -33,7 +33,7 @@ public class ProducersDMCallBack
         for(int j=0; j<10; j++) {
             // if more than one loop then - data will be stored in different partition
             // because each loop will create different batches of data
-            for (int i = 1; i <= 5; i++) {
+            for (int i = 101; i <= 105; i++) {
                 // if only one loop & callback then - data will be stored in same partition
                 val = (val + (val * 0.4));
 
